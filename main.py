@@ -45,29 +45,29 @@ def check_for_updates():
     lp, airdrop, launchpad = fetch_binance_data()
     updated = False
 
-   if lp and lp.get("data") and lp["data"].get("article") and lp["data"]["article"]:
-    title = lp["data"]["article"][0]["title"]
-    if title != last_titles[0]:
-        last_titles = (title, last_titles[1], last_titles[2])
-        send_telegram(f"🚀 New Launchpool: {title}")
-        updated = True
+# Launchpool block
+    if lp and lp.get("data") and lp["data"].get("article") and lp["data"]["article"]:
+        title = lp["data"]["article"][0]["title"]
+        if title != last_titles[0]:
+            last_titles = (title, last_titles[1], last_titles[2])
+            send_telegram(f"🚀 New Launchpool: {title}")
+            updated = True
 
-    # Airdrop block
-if airdrop and airdrop.get("data") and airdrop["data"].get("articles") and airdrop["data"]["articles"]:
-    title = airdrop["data"]["articles"][0]["title"]
-    if title != last_titles[1]:
-        last_titles = (last_titles[0], title, last_titles[2])
-        send_telegram(f"🎁 New Airdrop: {title}")
-        updated = True
+# Airdrop block
+    if airdrop and airdrop.get("data") and airdrop["data"].get("articles") and airdrop["data"]["articles"]:
+        title = airdrop["data"]["articles"][0]["title"]
+        if title != last_titles[1]:
+            last_titles = (last_titles[0], title, last_titles[2])
+            send_telegram(f"🎁 New Airdrop: {title}")
+            updated = True
 
 # Launchpad block
-if launchpad and launchpad.get("data") and launchpad["data"].get("article") and launchpad["data"]["articles"]:
-    title = launchpad["data"]["articles"][0]["title"]
-    if title != last_titles[2]:
-        last_titles = (last_titles[0], last_titles[1], title)
-        send_telegram(f"🚀 New Launchpad: {title}")
-        updated = True
-
+    if launchpad and launchpad.get("data") and launchpad["data"].get("article") and launchpad["data"]["articles"]:
+        title = launchpad["data"]["articles"][0]["title"]
+        if title != last_titles[2]:
+            last_titles = (last_titles[0], last_titles[1], title)
+            send_telegram(f"🚀 New Launchpad: {title}")
+            updated = True
 
     if not updated:
         print("No updates found.")
