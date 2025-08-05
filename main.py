@@ -12,13 +12,13 @@ def send_telegram(msg):
 
 def fetch_binance_data():
     try:
-    lp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=launchpool&lang=en").json()
-    airdrop = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=airdrop&lang=en").json()
-    launchpad = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=launchpad&lang=en").json()
-
-except requests.exceptions.RequestException as e:
-    print("Error fetching Binance data:", e)
-    return {}, {}, {}
+        lp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=launchpool&lang=en").json()
+        airdrop = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=airdrop&lang=en").json()
+        launchpad = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=launchpad&lang=en").json()
+        return lp, airdrop, launchpad
+    except requests.exceptions.RequestException as e:
+        print("Error fetching Binance data:", e)
+        return {}, {}, {}
 
 last_titles = ("", "", "")
 
