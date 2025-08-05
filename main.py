@@ -10,6 +10,7 @@ def send_telegram(msg):
     payload = {"chat_id": CHAT_ID, "text": msg}
     requests.post(url, data=payload)
 
+last_titles = ("", "", "")
 def fetch_binance_data():
     try:
         lp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=launchpool&lang=en").json()
@@ -18,35 +19,30 @@ def fetch_binance_data():
         return lp, airdrop, launchpad
     except Exception as e:
         print("Error fetching Binance data:", e)
-        return {}, {}, {}
+        return None, None, None
 
-last_titles = ("", "", "")
 
 def check_for_updates():
     global last_titles
-    updated = False
+
     lp, airdrop, launchpad = fetch_binance_data()
 
-    if lp and lp["data"] and lp["data"]["articles"]:
-        new_title = lp["data"]["articles"][0]["title"]
-        if new_title != last_titles[0]:
-            send_telegram(f"🚀 New Launchpool: {new_title}")
-            last_titles = (new_title, last_titles[1], last_titles[2])
-            updated = True
+    lp_articles = lp.get("data", {}).get("articles", []) if lp else []
+    airdrop_articles = airdrop.get("data", {}).get("articles", []) if airdrop else []
+    launchpad_articles = launchpad.get("data", {}).get("articles", []) if launchpad else []
 
-    if airdrop and airdrop["data"] and airdrop["data"]["articles"]:
-        new_title = airdrop["data"]["articles"][0]["title"]
-        if new_title != last_titles[1]:
-            send_telegram(f"🎁 New Airdrop: {new_title}")
-            last_titles = (last_titles[0], new_title, last_titles[2])
-            updated = True
+    if (
+        lp_articles and lp_articles[0]["title"] != last_titles[0]
+        or airdrop_articles and airdrop_articles[0]["title"] != last_titles[1]
+        or launchpad_articles and launchpad_articles[0]["title"] != last_titles[2]
+    ):
+        last_titles = [
+            lp_articles[0]["title"] if lp_articles else "",
+            airdrop_articles[0]["title"] if airdrop_articles else "",
+            launchpad_articles[0]["title"] if launchpad_articles else ""
+        ]
+        send_telegram_message()
 
-    if launchpad and launchpad["data"] and launchpad["data"]["articles"]:
-        new_title = launchpad["data"]["articles"][0]["title"]
-        if new_title != last_titles[2]:
-            send_telegram(f"📢 New Launchpad: {new_title}")
-            last_titles = (last_titles[0], last_titles[1], new_title)
-            updated = True
 
     if not updated:
         print("✅ No updates found.")
