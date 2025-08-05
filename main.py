@@ -38,9 +38,8 @@ def check_for_updates():
 
     # Launchpool block
     try:
-        if lp.get("data") and lp["data"].get("article") and lp["data"]["article"]:
-            title = lp["data"]["article"][0]["title"]
-            if title != last_titles[0]:
+        articles = lp.get("data", {}).get("articles", []) if lp else []
+if articles and articles[0]["title"] != last_titles[0]:
                 last_titles = (title, last_titles[1], last_titles[2])
                 send_telegram(f"🚀 New Launchpool: {title}")
                 updated = True
