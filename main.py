@@ -10,7 +10,6 @@ def send_telegram(msg):
     payload = {"chat_id": CHAT_ID, "text": msg}
     requests.post(url, data=payload)
 
-last_titles = ("", "", "")
 def fetch_binance_data():
     try:
         lp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=launchpool&lang=en").json()
