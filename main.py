@@ -16,7 +16,7 @@ def fetch_binance_data():
         airdrop = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=airdrop&lang=en").json()
         launchpad = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnowledgeArticle&tag=launchpad&lang=en").json()
         return lp, airdrop, launchpad
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         print("Error fetching Binance data:", e)
         return {}, {}, {}
 
