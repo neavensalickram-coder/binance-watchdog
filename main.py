@@ -19,7 +19,7 @@ def fetch_binance_data():
 
 except requests.exceptions.RequestException as e:
     print("Error fetching Binance data:", e)
-    return None, None, None
+    return {}, {}, {}
 
 last_titles = ("", "", "")
 
