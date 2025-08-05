@@ -53,21 +53,20 @@ def check_for_updates():
             send_telegram(f"🚀 New Launchpool: {title}")
             updated = True
 
-# Airdrop block
-    if airdrop and airdrop.get("data") and airdrop["data"].get("articles") and airdrop["data"]["articles"]:
-        title = airdrop["data"]["articles"][0]["title"]
-        if title != last_titles[1]:
-            last_titles = (last_titles[0], title, last_titles[2])
-            send_telegram(f"🎁 New Airdrop: {title}")
-            updated = True
+if airdrop and airdrop.get("data", {}).get("articles"):
+    title = airdrop["data"]["articles"][0]["title"]
+    if title != last_titles[1]:
+        last_titles = (last_titles[0], title, last_titles[2])
+        send_telegram(f"🎁 New Airdrop: {title}")
+        updated = True
 
-# Launchpad block
-    if launchpad and launchpad.get("data") and launchpad["data"].get("article") and launchpad["data"]["articles"]:
-        title = launchpad["data"]["articles"][0]["title"]
-        if title != last_titles[2]:
-            last_titles = (last_titles[0], last_titles[1], title)
-            send_telegram(f"🚀 New Launchpad: {title}")
-            updated = True
+if launchpad and launchpad.get("data", {}).get("articles"):
+    title = launchpad["data"]["articles"][0]["title"]
+    if title != last_titles[2]:
+        last_titles = (last_titles[0], last_titles[1], title)
+        send_telegram(f"🚀 New Launchpad: {title}")
+        updated = True
+
 
     if not updated:
         print("No updates found.")
