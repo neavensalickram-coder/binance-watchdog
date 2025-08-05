@@ -12,11 +12,22 @@ def send_telegram(msg):
 
 def fetch_binance_data():
     try:
-        lp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=48b499e5e1e04d73b6ef3c7010c0598c&pageSize=1").json()
-        airdrop = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=2&catalogId=48b499e5e1e04d73b6ef3c7010c0598c&pageSize=1").json()
-        launchpad = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=3&catalogId=48b499e5e1e04d73b6ef3c7010c0598c&pageSize=1").json()
+        lp_resp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=48b499e5e1e04d73b6ef3c7010c0598c&pageSize=1")
+        ad_resp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=2&catalogId=48b499e5e1e04d73b6ef3c7010c0598c&pageSize=1")
+        launchpad_resp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=3&catalogId=48b499e5e1e04d73b6ef3c7010c0598c&pageSize=1")
+
+        # Validate status codes
+        if lp_resp.status_code != 200 or ad_resp.status_code != 200 or launchpad_resp.status_code != 200:
+            print("❌ API request failed — check response codes")
+            return None, None, None
+
+        lp = lp_resp.json()
+        airdrop = ad_resp.json()
+        launchpad = launchpad_resp.json()
+
         return lp, airdrop, launchpad
-    except:
+    except Exception as e:
+        print(f"❌ Fetch Error: {e}")
         return None, None, None
 
 last_titles = ("", "", "")
