@@ -5,77 +5,55 @@ import os
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 
-def send_telegram(message):
+def send_telegram(msg):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": CHAT_ID, "text": message}
+    payload = {"chat_id": CHAT_ID, "text": msg}
     requests.post(url, data=payload)
 
 def fetch_binance_data():
     try:
-        lp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=48b4995e1e04473b6ef3c7010c0598c&pageSize=1")
-        airdrop = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=2&catalogId=48b4995e1e04473b6ef3c7010c0598c&pageSize=1")
-        launchpad = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=3&catalogId=48b4995e1e04473b6ef3c7010c0598c&pageSize=1")
-
-        if lp.status_code == 200 and airdrop.status_code == 200 and launchpad.status_code == 200:
-            return lp.json(), airdrop.json(), launchpad.json()
-        else:
-            print("❌ Binance API status code error")
-            return None, None, None
-    except Exception as e:
-        print(f"❌ Binance API fetch error: {e}")
+        lp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnoledgeArticle&tag=launchpool&lang=en").json()
+        airdrop = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnoledgeArticle&tag=airdrop&lang=en").json()
+        launchpad = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=KnoledgeArticle&tag=launchpad&lang=en").json()
+        return lp, airdrop, launchpad
+    except:
         return None, None, None
 
 last_titles = ("", "", "")
 
 def check_for_updates():
     global last_titles
+    updated = False
     lp, airdrop, launchpad = fetch_binance_data()
 
-    if not lp or not airdrop or not launchpad:
-        return
+    if lp and lp["data"] and lp["data"]["articles"]:
+        new_title = lp["data"]["articles"][0]["title"]
+        if new_title != last_titles[0]:
+            send_telegram(f"🚀 New Launchpool: {new_title}")
+            last_titles = (new_title, last_titles[1], last_titles[2])
+            updated = True
 
-    updated = False
+    if airdrop and airdrop["data"] and airdrop["data"]["articles"]:
+        new_title = airdrop["data"]["articles"][0]["title"]
+        if new_title != last_titles[1]:
+            send_telegram(f"🎁 New Airdrop: {new_title}")
+            last_titles = (last_titles[0], new_title, last_titles[2])
+            updated = True
 
-    # Launchpool block
-    try:
-        articles = lp.get("data", {}).get("articles", []) if lp else []
-if articles and articles[0]["title"] != last_titles[0]:
-                last_titles = (title, last_titles[1], last_titles[2])
-                send_telegram(f"🚀 New Launchpool: {title}")
-                updated = True
-    except Exception as e:
-        print(f"Launchpool error: {e}")
-
-    # Airdrop block
-    try:
-        if airdrop.get("data", {}).get("articles"):
-            title = airdrop["data"]["articles"][0]["title"]
-            if title != last_titles[1]:
-                last_titles = (last_titles[0], title, last_titles[2])
-                send_telegram(f"🎁 New Airdrop: {title}")
-                updated = True
-    except Exception as e:
-        print(f"Airdrop error: {e}")
-
-    # Launchpad block
-    try:
-        if launchpad.get("data", {}).get("articles"):
-            title = launchpad["data"]["articles"][0]["title"]
-            if title != last_titles[2]:
-                last_titles = (last_titles[0], last_titles[1], title)
-                send_telegram(f"📢 New Launchpad: {title}")
-                updated = True
-    except Exception as e:
-        print(f"Launchpad error: {e}")
+    if launchpad and launchpad["data"] and launchpad["data"]["articles"]:
+        new_title = launchpad["data"]["articles"][0]["title"]
+        if new_title != last_titles[2]:
+            send_telegram(f"📢 New Launchpad: {new_title}")
+            last_titles = (last_titles[0], last_titles[1], new_title)
+            updated = True
 
     if not updated:
         print("✅ No updates found.")
 
 if __name__ == "__main__":
-    print("🔄 Binance monitor starting...")
+    send_telegram("👀 Binance Watchdog started & checking every 5 minutes...")
     while True:
         check_for_updates()
-        time.sleep(3600)  # Check every hour
-
+        time.sleep(300)  # Check every 5 minutes
 
 
