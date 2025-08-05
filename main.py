@@ -12,9 +12,17 @@ def send_telegram(msg):
 
 def fetch_binance_data():
     try:
-        lp_resp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=48b499e5e1e04d73b6ef3c7010c0598c&pageSize=1")
-        ad_resp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=2&catalogId=48b499e5e1e04d73b6ef3c7010c0598c&pageSize=1")
-        launchpad_resp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=3&catalogId=48b499e5e1e04d73b6ef3c7010c0598c&pageSize=1")
+        lp = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=1&catalogId=48b4995e1e04473b6ef3c7010c0598c&pageSize=1")
+        airdrop = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=2&catalogId=48b4995e1e04473b6ef3c7010c0598c&pageSize=1")
+        launchpad = requests.get("https://www.binance.com/bapi/composite/v1/public/cms/article/list/query?type=3&catalogId=48b4995e1e04473b6ef3c7010c0598c&pageSize=1")
+
+        if lp.status_code == 200 and airdrop.status_code == 200 and launchpad.status_code == 200:
+            return lp.json(), airdrop.json(), launchpad.json()
+        else:
+            print("❌ Binance API response code failure")
+            return None, None, None
+    except:
+        return None, None, None
 
         # Validate status codes
         if lp_resp.status_code != 200 or ad_resp.status_code != 200 or launchpad_resp.status_code != 200:
